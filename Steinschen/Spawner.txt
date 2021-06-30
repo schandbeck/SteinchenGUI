@@ -1,0 +1,25 @@
+package com.steinschen.main;
+
+public class Spawner {
+	
+	private Handler handler;
+
+	boolean gameStarted=false;
+	
+	public Spawner(Game game, Handler handler, Board board) {
+		
+		this.handler = handler;
+	}
+	
+	
+	public void tick() {
+	
+		if(!gameStarted) {
+			handler.addObject(new Stone(130, 162, ID.Stone, handler));
+			
+			
+			gameStarted=true;
+		}
+		
+	}
+}
