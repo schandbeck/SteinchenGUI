@@ -3,23 +3,32 @@ package com.steinschen.main;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import com.steinschen.main.Game.STATE;
+
 public class MouseListener extends MouseAdapter{
 	
 	private Game game;
 	private Move move;
+	private Handler handler;
 	
 	private int selX, selY;
 	private int nextX, nextY;
 	private int selFieldSide, nextFieldSide;
 
-	public MouseListener(Game game, Move move) {
+	public MouseListener(Game game, Move move, Handler handler) {
 		this.game = game;
 		this.move=move;
+		this.handler=handler;
 	}
 	
 	public void mousePressed(MouseEvent e) {
 		int mx = e.getX();
 		int my = e.getY();
+		
+		if(mouseOver(mx, my, 30, 30, 150, 30)) {
+			System.out.println("RESTART");
+			game.gameState=STATE.Restart;
+		}
 		
 		if(mouseOver(mx, my, 100, 140, 90, 90)) {
 			System.out.println("2: [0][0]");
@@ -244,6 +253,8 @@ public class MouseListener extends MouseAdapter{
 			selY=0;
 			selFieldSide=1;
 		}
+		
+		
 	}
 	
 	public void mouseReleased(MouseEvent e) {
