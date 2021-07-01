@@ -32,69 +32,156 @@ public class Move {
 		int lastX=selX, lastY=selY;
 		int direction=1;
 		boolean moving=true;
+		boolean firstMove=true;
+		int playerFieldSide=0, enemyFieldSide=0;
+		int amountTook=0;
 		
-		moves=board.getAmount(selY, selX, selFieldSide);
+		
 		System.out.println(" | " + moves);
 		
-		while(moving) {
-		
-			if(checkMove(selFieldSide, nextFieldSide, selX, selY, nextX, nextY)) {
-				
-				
-				
-				if(nextX>lastX) {
-					direction=1;
-				}
-				if(nextX<lastX) {
-					direction=-1;
-				}
-				
-				lastX=nextX;
-				nextX=lastX+(1*direction);
+		if(checkMove(selFieldSide, nextFieldSide, selX, selY, nextX, nextY)) {
 			
-				
-				if(nextX==-1 && selX==0 && nextY==0 && selY==1) {
-					nextX=1;
-					nextY=0;
-				}
-				else if(nextX==-1 && lastX==0 && nextY==1 && lastY==0) {
-					
-				}
-				
-				else if(nextX==0 && lastX==0 && nextY==1 && lastY==0) {
-					nextX=0;
-					nextY=1;
-				}
-				else if(nextX==0 && lastX==0 && nextY==0 && lastY==1) {
-					nextX=0;
-					nextY=0;
-				}
-				else if(nextX==7 && lastX==7 && nextY==1 && lastY==0) {
-					nextX=7;
-					nextY=1;
-					direction=-1;
-				}
-				else if(nextX==7 && lastX==7 && nextY==0 && lastY==1) {
-					nextX=7;
-					nextY=0;
-					direction=-1;
-				}
-				
-				
-				
-				System.out.println(nextX);
-				System.out.println(nextY);
-				
-				board.setAmount(selY, selX, selFieldSide, 2);
-				
-				
+			if(selFieldSide == 1) {
+				playerFieldSide = 1;
+				enemyFieldSide = 2;
+			}
+			if(selFieldSide == 2) {
+				playerFieldSide = 2;
+				enemyFieldSide = 1;
 			}
 			
-			moving=false;
-			System.out.println("Move succesful");
-			handler.clearAll();
+			moves=board.getAmount(selY, selX, selFieldSide);
+			
+			System.out.println("Initial Moves:" +moves+ " | X:" +selX+ " Y:"+selY);
+			
+			while(moving) {
+				
+				System.out.println("LastX:" +lastX+ " SelY:"+selY);
+				board.setAmount(selY, lastX, selFieldSide, 0);
+				
+				for(int i=0; i<moves; i++) {
+					
+					if(nextX>lastX) {
+						direction=1;
+					}
+					if(nextX<lastX) {
+						direction=-1;
+					}
+					
+					lastX=nextX;
+					nextX++;
+					
+					System.out.println("");
+					System.out.println("Dir: "+direction);
+					
+					if(firstMove) {
+						lastX=selX+(1*direction);
+						nextX=lastX+(1*direction);
+						firstMove=false;
+						System.out.println("FirstMove");
+					}
+					else{
+						nextX=lastX+(1*direction);
+					}
+					
+					System.out.println("");
+					
+					System.out.print("LastX: "+lastX);
+					System.out.println(" | LastY: "+lastY);
+					
+					System.out.print("NextX: "+nextX);
+					System.out.println(" | NextY: "+nextY);
+					
+					System.out.print("SelX: "+selX);
+					System.out.println(" | SelY: "+selY);
+					
+					if((lastX==-1 && nextX==-2 && selX==0 && lastY==0 && nextY==0 && selY==0) || (lastX==1 && nextX==2 && selX==0 && lastY==0 && nextY==1 && selY==0)) {							//UP LEFT
+						System.out.println("				Case: " + 1);
+						nextX=1;
+						nextY=1;
+						lastX=0;
+						lastY=0;
+						selY=1;
+						direction=1;
+					}
+					else if((lastX==-1 && nextX==-2 && selX==-1 && lastY==1 && nextY==1 && selY==1) || (lastX==1 && nextX==2 && selX==0 && lastY==1 && nextY==0 && selY==1)) {				//DOWN LEFT
+						System.out.println("				Case: " + 2);
+						nextX=1;
+						nextY=0;
+						lastX=0;
+						lastY=1;
+						selY=0;
+						direction=1;						
+					}
+					else if((lastX==8 && nextX==9 && selX==6 && lastY==0 && nextY==0 && selY==0) || (lastX==8 && nextX==9 && selX==7 && lastY==0 && nextY==1 && selY==0)) {						//UP RIGHT
+						System.out.println("				Case: " + 3);
+						nextX=6;
+						nextY=1;
+						lastX=7;
+						selY=1;
+						direction=-1;
+					}
+					else if((lastX==8 && nextX==9 && selX==6 && lastY==1 && nextY==1 && selY==1) || (lastX==8 && nextX==9 && selX==7 && lastY==1 && nextY==0 && selY==1)) {			//DOWN RIGHT
+						System.out.println("				Case: " + 4);
+						nextX=6;
+						nextY=0;
+						lastX=7;
+						selY=0;
+						direction=-1;
+					}
+					
+					
+					
+					board.setAmount(selY, lastX, selFieldSide, board.getAmount(selY, lastX, selFieldSide)+1);
+					
+					
+					System.out.println("									LastX:" + lastX + " | SelY:" + selY);
+					System.out.println("");
+					
+					selX=lastX-1;
+					lastY=selY;
+					selY=nextY;
+					
+					if(selX==-1 && selY==0) {
+						selX=0;
+					}
+					
+					
+					System.out.print("LastX: "+lastX);
+					System.out.println(" | LastY: "+lastY);
+					
+					System.out.print("NextX: "+nextX);
+					System.out.println(" | NextY: "+nextY);
+					
+					System.out.print("SelX: "+selX);
+					System.out.println(" | SelY: "+selY);
+					
+					handler.clearAll();
+				}
+				
+				System.out.println("SelX:" +selX+ " SelY:" +selY);
+				
+				
+				amountTook=board.getAmount(selY, lastX, selFieldSide);
+				takeFromEnemy(playerFieldSide, enemyFieldSide, lastX, selY);
+				amountTook=(board.getAmount(selY, lastX, selFieldSide)-amountTook);
+				moves=board.getAmount(selY, lastX, selFieldSide);
+				
+				System.out.println("");
+				System.out.println("																						Amount Took:" + amountTook);
+				System.out.println("");
+				System.out.println("Move succesful");
+				System.out.println("");
+				System.out.println("Moves: " + moves);
+				System.out.println("");
+				System.out.println("-----------------------------------------------------------------------------------------------------");
+				System.out.println("");
+				
+				if(moves<2) {
+					moving=false;
+				}
+			}
 		}
-		
 	}
 	
 	
@@ -123,6 +210,17 @@ public class Move {
 	}
 	
 	
+	public void takeFromEnemy(int playerFieldSide, int enemyFieldSide, int x, int y) {
+		
+		int amount=0;
+		amount=board.getAmount(y, x, enemyFieldSide);
+			
+		if(amount>0 && y==1) {
+			board.setAmount(y, x, enemyFieldSide, 0);
+			board.setAmount(y, x, playerFieldSide, amount+board.getAmount(y, x, playerFieldSide));
+		}
+		
+	}
 	
 
 	public int getSelX() {
