@@ -19,29 +19,39 @@ public class Game extends Canvas implements Runnable{
 	private MouseListener mouseListener;
 	private Spawner spawner;
 	private Move move;
+	private HUD hud;
+	
+	public enum STATE {
+		Menu,
+		Help,
+		Game,
+		GameOver,
+		Restart
+	};
+	
+	public STATE gameState = STATE.Game;
 	
 	public Game() {
 		
 		handler = new Handler();
 		
+		board=new Board(100, 100, ID.Board, handler);
 		spawner = new Spawner(this, handler, board);
-		
-		board=new Board(100, 100, ID.Board, handler, this);
+		hud = new HUD();
 		move = new Move(this, board, handler);
-		mouseListener = new MouseListener(this, move);
-		
-		
+		mouseListener = new MouseListener(this, move, handler);
 		this.addMouseListener(mouseListener);
-		
-		
 		
 		new Window(WIDTH, HEIGHT, "Das Spiel der Bongoneger", this);
 		
+		if(gameState==STATE.Game) {
+			handler.addObject(new Board(100, 100, ID.Board, handler));
+		}
 		
-		
-		handler.addObject(new Board(100, 100, ID.Board, handler, this));
-	
-		
+		if(gameState==STATE.Restart) {
+			board.clearBoard();
+			handler.addObject(new Board(100, 100, ID.Board, handler));
+		}
 	}
 	
 	public synchronized void start() {
@@ -90,8 +100,10 @@ public class Game extends Canvas implements Runnable{
 	
 	private void tick() {
 		handler.tick();
-		spawner.tick();
-		board.tick();
+		
+		if(gameState==STATE.Restart) {
+			spawner.tick();
+		}
 	}
 	
 	private void render() {
@@ -107,7 +119,11 @@ public class Game extends Canvas implements Runnable{
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		handler.render(g);
-		board.render(g);
+		
+		if(gameState==STATE.Game) {
+			board.render(g);
+			hud.render(g);
+		}
 		
 		g.dispose();
 		bs.show();
