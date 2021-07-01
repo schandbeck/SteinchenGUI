@@ -1,0 +1,22 @@
+package com.steinschen.main;
+
+import java.awt.Color;
+import java.awt.Graphics;
+
+public class HUD {
+
+	public HUD() {
+		
+	}
+	
+	
+	
+	
+	public void render(Graphics g) {
+		
+		g.setColor(Color.black);
+		g.drawRect(30, 30, 150, 30);
+		
+		g.drawString("RESTART", 75, 50);
+	}
+}
