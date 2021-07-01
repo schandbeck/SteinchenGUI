@@ -4,24 +4,26 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class Board extends GameObject{
-
-	private Game game;
+	
 	private Handler handler;
 	
 	private Stone stone;
-	
-	private boolean gameStarted = false;
 	
 	private int field[][] = new int[2][8];
 	private int field2[][] = new int[2][8];
 	
 	private int amount;
 	
+	private int amountField[] = new int[8];
+	private int amountField2[] = new int[8];
 	
-	public Board(int x, int y, ID id, Handler handler, Game game) {
+	private boolean gameOver=false;
+	
+	
+	
+	public Board(int x, int y, ID id, Handler handler) {
 		super(x, y, id);
 		
-		this.game = game;
 		this.handler = handler;
 		
 		for(int i=0; i<8; i++) {
@@ -30,13 +32,9 @@ public class Board extends GameObject{
 				field2[j][i]=2;
 			}
 		}
-		
-		field[0][3]=2;
-		field2[1][6]=2;
 	}
 	
 	public void tick() {
-		
 		
 	}
 	
@@ -122,11 +120,17 @@ public class Board extends GameObject{
 		g.drawString(String.valueOf(field[0][6]), 800, 640);
 		g.drawString(String.valueOf(field[0][7]), 910, 640);
 		
-		
 	}
 	
-	public void clearBoard(Graphics g) {
+	
+	public void clearBoard() {
 		
+		for(int i=0; i<8; i++) {
+			for(int j=0; j<2; j++) {
+				field[j][i]=2;
+				field2[j][i]=2;
+			}
+		}
 	}
 	
 	
