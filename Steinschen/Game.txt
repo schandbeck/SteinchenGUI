@@ -4,6 +4,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 
 public class Game extends Canvas implements Runnable{
 	
@@ -20,29 +21,54 @@ public class Game extends Canvas implements Runnable{
 	private Spawner spawner;
 	private Move move;
 	private HUD hud;
+	private AudioPlayer ap;
+	private Settings settings;
+	private End end;
 	
 	public enum STATE {
 		Menu,
-		Help,
+		Settings,
 		Game,
+		Muted,
 		GameOver,
-		Restart
+		Restart,
+		End
 	};
 	
-	public STATE gameState = STATE.Game;
+	public STATE gameState = STATE.End;
+	
+	public static BufferedImage spriteSheet;
 	
 	public Game() {
 		
+		BufferedImageLoader loader = new BufferedImageLoader();
+		
+		try {
+			spriteSheet = loader.loadImage("/steinchen_icon_sprite_sheet.png");
+			System.out.println("Icon Sprite Sheet loaded");
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		
 		handler = new Handler();
+		ap = new AudioPlayer();
 		
 		board=new Board(100, 100, ID.Board, handler);
 		spawner = new Spawner(this, handler, board);
-		hud = new HUD();
-		move = new Move(this, board, handler);
-		mouseListener = new MouseListener(this, move, handler);
+		hud = new HUD(this, ap);
+		move = new Move(this, board, handler, ap);
+		mouseListener = new MouseListener(this, move, handler, ap);
 		this.addMouseListener(mouseListener);
+		end = new End(this, move);
+		settings = new Settings(this, ap);
+		
+		AudioPlayer.load();
+		
+		AudioPlayer.getMusic("music").loop();
 		
 		new Window(WIDTH, HEIGHT, "Das Spiel der Bongoneger", this);
+		
 		
 		if(gameState==STATE.Game) {
 			handler.addObject(new Board(100, 100, ID.Board, handler));
@@ -123,6 +149,15 @@ public class Game extends Canvas implements Runnable{
 		if(gameState==STATE.Game) {
 			board.render(g);
 			hud.render(g);
+		}
+		
+		if(gameState==STATE.Settings) {
+			handler.clearBoard();
+			settings.render(g);
+		}
+		
+		if(gameState==STATE.End) {
+			end.render(g);
 		}
 		
 		g.dispose();
