@@ -2,11 +2,14 @@ package com.steinschen.main;
 
 import java.awt.Graphics;
 
+import com.steinschen.main.Game.STATE;
+
 public class Move {
 
 	private Game game;
 	private Board board;
 	private Handler handler;
+	private AudioPlayer ap;
 	
 	private int selX, selY;
 	private int selX2, selY2;
@@ -18,13 +21,16 @@ public class Move {
 	
 	private int moves;
 	
+	private int playerWon=0;
+
 	Graphics g;
 
-	public Move(Game game, Board board, Handler handler){
+	public Move(Game game, Board board, Handler handler, AudioPlayer ap){
 	
 		this.game=game;
 		this.board=board;
 		this.handler=handler;
+		this.ap = ap;
 	}
 	
 	public void makeMove(int selFieldSide, int nextFieldSide, int selX, int selY, int nextX, int nextY) {
@@ -40,6 +46,8 @@ public class Move {
 		System.out.println(" | " + moves);
 		
 		if(checkMove(selFieldSide, nextFieldSide, selX, selY, nextX, nextY)) {
+			
+			if(!ap.getSoundMuted()) AudioPlayer.getSound("click").play();
 			
 			if(selFieldSide == 1) {
 				playerFieldSide = 1;
@@ -130,10 +138,7 @@ public class Move {
 						direction=-1;
 					}
 					
-					
-					
 					board.setAmount(selY, lastX, selFieldSide, board.getAmount(selY, lastX, selFieldSide)+1);
-					
 					
 					System.out.println("									LastX:" + lastX + " | SelY:" + selY);
 					System.out.println("");
@@ -157,6 +162,8 @@ public class Move {
 					System.out.println(" | SelY: "+selY);
 					
 					handler.clearAll();
+					
+					
 				}
 				
 				System.out.println("SelX:" +selX+ " SelY:" +selY);
@@ -179,6 +186,11 @@ public class Move {
 				
 				if(moves<2) {
 					moving=false;
+				}
+				
+				if(board.checkForLoss(enemyFieldSide)) {
+					game.gameState = STATE.End;
+					playerWon=playerFieldSide;
 				}
 			}
 		}
@@ -293,5 +305,13 @@ public class Move {
 
 	public void setNextY2(int nextY2) {
 		this.nextY2 = nextY2;
+	}
+	
+	public int getPlayerWon() {
+		return playerWon;
+	}
+
+	public void setPlayerWon(int playerWon) {
+		this.playerWon = playerWon;
 	}
 }
